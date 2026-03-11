@@ -47,3 +47,9 @@ data/SAMPLE_LABELS_TOTAL.csv
 data/theme_test.csv
 data/theme_train.csv
 
+photokorea_images.zip
+resnet50_train_with_finetuning_optuna.ipynb
+resnet50_train_with_finetuning.ipynb
+resnet50_train.ipynb
+wt_ai_team3_models.zip
+wt_ai_team3_train_images.zip
