@@ -25,41 +25,65 @@ st.logo(logo_img, size="medium")
 # st.image(logo_img, use_container_width=True)
 
 # -------------------------------------------------
-# 인트로 사운드 (페이지 접속 시 클릭 1회 후 재생)
+# 인트로 스플래시 + 사운드 (접속/새로고침 시 1회)
+# session_state는 새로고침 시 초기화되므로 매 접속마다 실행됨
 # -------------------------------------------------
-_intro_sound_path = "./data/sounds/intro_sound.mp3"
 if "intro_played" not in st.session_state:
-    st.session_state.intro_played = False
+    st.session_state.intro_played = True
 
-if not st.session_state.intro_played and os.path.exists(_intro_sound_path):
-    with open(_intro_sound_path, "rb") as _f:
-        _audio_b64 = base64.b64encode(_f.read()).decode()
+    _logo_path = "./data/common_images/logo.png"
+    _sound_path = "./data/sounds/intro_sound.mp3"
+
+    _logo_b64 = ""
+    if os.path.exists(_logo_path):
+        with open(_logo_path, "rb") as _f:
+            _logo_b64 = base64.b64encode(_f.read()).decode()
+
+    # 로고 스플래시: CSS 애니메이션으로 3초 후 자동으로 사라짐
     st.markdown(
         f"""
-        <div id="intro-overlay" style="
-            position:fixed; top:0; left:0; width:100vw; height:100vh;
-            background:rgba(0,0,0,0.85); z-index:9999;
-            display:flex; flex-direction:column;
-            align-items:center; justify-content:center; cursor:pointer;"
-            onclick="
-                document.getElementById('intro-overlay').style.display='none';
-                var a=new Audio('data:audio/mp3;base64,{_audio_b64}');
-                a.play();
-            ">
-            <div style="color:white; font-size:2.5rem; font-weight:bold; margin-bottom:1rem;">🎬 스크린 속 그곳으로</div>
-            <div style="color:#ccc; font-size:1.1rem; margin-bottom:2rem;">캡쳐 한 장으로 떠나는 나만의 K‑로드 투어</div>
-            <div style="background:#ff4b4b; color:white; padding:0.8rem 2.5rem;
-                        border-radius:50px; font-size:1.2rem; font-weight:bold;">
-                ▶ 시작하기
-            </div>
+        <style>
+        @keyframes splashFade {{
+            0%   {{ opacity: 1; }}
+            70%  {{ opacity: 1; }}
+            100% {{ opacity: 0; visibility: hidden; }}
+        }}
+        #splash-overlay {{
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: splashFade 3s ease-out forwards;
+            pointer-events: none;
+        }}
+        </style>
+        <div id="splash-overlay">
+            <img src="data:image/png;base64,{_logo_b64}"
+                 style="max-width:420px; max-height:320px; object-fit:contain;">
         </div>
         """,
         unsafe_allow_html=True,
     )
-    if st.button("▶ 시작하기", key="intro_btn", type="primary", use_container_width=False):
-        st.session_state.intro_played = True
-        st.rerun()
 
+    # 사운드: muted autoplay 후 즉시 언뮤트 (브라우저 정책 우회)
+    if os.path.exists(_sound_path):
+        with open(_sound_path, "rb") as _f:
+            _audio_b64 = base64.b64encode(_f.read()).decode()
+        st.components.v1.html(
+            f"""
+            <audio id="intro" autoplay muted>
+              <source src="data:audio/mp3;base64,{_audio_b64}" type="audio/mp3">
+            </audio>
+            <script>
+              document.getElementById('intro').muted = false;
+            </script>
+            """,
+            height=1,
+        )
 
 # -------------------------------------------------
 # INFO
