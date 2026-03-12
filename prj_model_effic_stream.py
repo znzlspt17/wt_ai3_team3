@@ -10,6 +10,7 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from PIL import Image, ImageFile
+import base64
 
 # Windows 한글 폰트 설정 (맑은 고딕)
 plt.rcParams['font.family'] = 'Malgun Gothic'
@@ -22,6 +23,43 @@ st.set_page_config(layout="wide")
 logo_img = "./data/common_images/logo.png"
 st.logo(logo_img, size="medium")
 # st.image(logo_img, use_container_width=True)
+
+# -------------------------------------------------
+# 인트로 사운드 (페이지 접속 시 클릭 1회 후 재생)
+# -------------------------------------------------
+_intro_sound_path = "./data/sounds/intro_sound.mp3"
+if "intro_played" not in st.session_state:
+    st.session_state.intro_played = False
+
+if not st.session_state.intro_played and os.path.exists(_intro_sound_path):
+    with open(_intro_sound_path, "rb") as _f:
+        _audio_b64 = base64.b64encode(_f.read()).decode()
+    st.markdown(
+        f"""
+        <div id="intro-overlay" style="
+            position:fixed; top:0; left:0; width:100vw; height:100vh;
+            background:rgba(0,0,0,0.85); z-index:9999;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center; cursor:pointer;"
+            onclick="
+                document.getElementById('intro-overlay').style.display='none';
+                var a=new Audio('data:audio/mp3;base64,{_audio_b64}');
+                a.play();
+            ">
+            <div style="color:white; font-size:2.5rem; font-weight:bold; margin-bottom:1rem;">🎬 스크린 속 그곳으로</div>
+            <div style="color:#ccc; font-size:1.1rem; margin-bottom:2rem;">캡쳐 한 장으로 떠나는 나만의 K‑로드 투어</div>
+            <div style="background:#ff4b4b; color:white; padding:0.8rem 2.5rem;
+                        border-radius:50px; font-size:1.2rem; font-weight:bold;">
+                ▶ 시작하기
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    if st.button("▶ 시작하기", key="intro_btn", type="primary", use_container_width=False):
+        st.session_state.intro_played = True
+        st.rerun()
+
 
 # -------------------------------------------------
 # INFO
@@ -153,15 +191,10 @@ def get_top3_similar_metadata(prob1, prob2, df_info):
     df_scores["match_score"] = match_counts
     df_sorted = df_scores.sort_values(by="match_score", ascending=False)
 
-    top3_unique_matches = df_sorted.drop_duplicates(
-        subset=["folder_name"], keep="first"
-    )
-
-    # 일치 점수가 높은 순으로 TOP 3 추출
-    # 점수가 같다면 랜덤하게 섞거나 상위 항목을 가져옵니다.
-    top3_matches = top3_unique_matches.head(
-        3
-    )  # df_scores.sort_values(by='match_score', ascending=False).head(3)
+    # 동점 행들을 먼저 섞은 뒤 정렬
+    df_shuffled = df_sorted.sample(frac=1).sort_values(by="match_score", ascending=False)
+    top3_unique_matches = df_shuffled.drop_duplicates(subset=["folder_name"], keep="first")
+    top3_matches = top3_unique_matches.head(3)
 
     return top3_matches, pred_binary
 
@@ -493,3 +526,4 @@ with right:
 st.divider()
 
 st.caption("Powered by SCENEFLIX ")
+
