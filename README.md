@@ -103,6 +103,20 @@ streamlit run prj_model_effic_stream.py
 
 ---
 
+## 📥 데이터 및 모델 다운로드
+
+아래 링크에서 학습된 모델 가중치와 이미지 데이터를 다운로드하세요.
+
+| 항목 | 링크 |
+|------|------|
+| 🤖 **모델 가중치** | [Google Drive - models](https://drive.google.com/file/d/1xAJCg0zEFBXtZEba5T6qzxIrGvLi8A5S/view?usp=drive_link) |
+| 🖼️ **학습 이미지** | [Google Drive - train images](https://drive.google.com/file/d/1J7I5xSaPTFsKR7l42956JBICx-fEWtPW/view?usp=drive_link) |
+| 🧪 **테스트 이미지** | [Google Drive - test images](https://drive.google.com/file/d/10qPdxOBRTtnRWINKEfG8SGScgJKDbMtY/view?usp=drive_link) |
+
+다운로드 후 모델 파일은 `models/` 폴더에, 이미지는 `final_images/` 폴더에 위치시켜 주세요.
+
+---
+
 ## 🛠️ 기술 스택
 
 <p>
