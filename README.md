@@ -52,7 +52,6 @@
 
 ```
 team_three/
-├── 📄 main.py                        # FastAPI 이미지 업로드 서버
 ├── 📄 prj_model_effic_stream.py      # Streamlit 메인 앱
 ├── 📄 MultiLabelDataset.py           # PyTorch 커스텀 데이터셋
 ├── 📄 pyproject.toml                 # 의존성 관리 (uv)
@@ -61,13 +60,10 @@ team_three/
 ├── 📓 resnet50_train_with_finetuning_optuna.ipynb  # Optuna 튜닝
 ├── 📓 draw_gradcams.ipynb            # GradCAM 시각화
 ├── data/
-│   ├── place_train.csv / place_test.csv   # 장소 학습/테스트 데이터
-│   ├── theme_train.csv / theme_test.csv   # 테마 학습/테스트 데이터
-│   └── place_data_final.csv               # 통합 데이터셋
+│   └── place_data_final.csv          # 통합 데이터셋
 ├── models/                           # 학습된 가중치 파일
-├── final_images/                     # 추론용 이미지
-└── runs/                             # TensorBoard 로그
-```
+└── final_images/                     # 추론용 이미지
+ ```
 
 ---
 
