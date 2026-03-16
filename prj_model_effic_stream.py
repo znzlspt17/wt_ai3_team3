@@ -431,6 +431,10 @@ if "itinerary" not in st.session_state:
     st.session_state.itinerary = []
 if "lang" not in st.session_state:
     st.session_state.lang = "KOR"
+if "places" not in st.session_state:
+    st.session_state.places = []
+if "last_inference_key" not in st.session_state:
+    st.session_state.last_inference_key = None
 
 T = TEXTS[st.session_state.lang]
 
@@ -496,13 +500,19 @@ with left:
         # TEST_IMAGE = "data/datasets_local/sample.jpg" # 실제 파일 경로로 수정
         run_inference_with_cam(img, m1, m2)
 
+        # 이미지 또는 모델이 바뀔 때만 places 캐시 갱신 (저장 버튼 클릭 재실행 시 변경 방지)
+        inference_key = (uploaded.name, selected_option)
+        if inference_key != st.session_state.last_inference_key:
+            st.session_state.places = list(places)
+            st.session_state.last_inference_key = inference_key
+
         st.image(img, caption=T["img_caption"], use_container_width=True)
 
         st.subheader(T["top3"])
 
         cols = st.columns(3)
 
-        for i, place in enumerate(places):
+        for i, place in enumerate(st.session_state.places):
 
             with cols[i]:
 
